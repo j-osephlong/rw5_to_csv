@@ -15,9 +15,9 @@ import sys
 from pathlib import Path
 from typing import TypedDict
 
-from machine_state import MachineState
-from records.record import RW5CSVRow, get_standard_record_params_dict
-from records.records_parsers import RECORD_CSV_PARSERS
+from rw5_to_csv.machine_state import MachineState
+from rw5_to_csv.records.record import RW5CSVRow, get_standard_record_params_dict
+from rw5_to_csv.records.records_parsers import RECORD_CSV_PARSERS
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 logger = logging.getLogger(__name__)

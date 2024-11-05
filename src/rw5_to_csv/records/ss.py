@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from machine_state import MachineState
-from records.record import RW5CSVRow, get_standard_record_params_dict
+from rw5_to_csv.machine_state import MachineState
+from rw5_to_csv.records.record import RW5CSVRow, get_standard_record_params_dict
 
 
 def parse_ss_record(
