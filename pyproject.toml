@@ -21,5 +21,9 @@ keywords = ["rw5", "totalstation", "processing"]
 [project.urls]
 Source = "https://github.com/j-osephlong/rw5_to_csv"
 
+[tool.setuptools]
+packages = ["rw5_to_csv"]
+package-dir = {"" = "src"}
+
 [tool.ruff.lint]
 ignore = ["S101"]

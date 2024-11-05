@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+setup.py
+src/rw5_to_csv/__init__.py
+src/rw5_to_csv/machine_state.py
+src/rw5_to_csv/rw5_csv.py
+src/rw5_to_csv.egg-info/PKG-INFO
+src/rw5_to_csv.egg-info/SOURCES.txt
+src/rw5_to_csv.egg-info/dependency_links.txt
+src/rw5_to_csv.egg-info/top_level.txt
