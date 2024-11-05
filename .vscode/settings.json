@@ -1,0 +1,11 @@
+{
+    "ruff.configuration": "./ruff.toml",
+    "ruff.lint.ignore": [
+        "S101"
+    ],
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

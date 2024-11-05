@@ -1,0 +1,145 @@
+JB,NM24012GJM240517,DT05-17-2024,TM11:02:14
+MO,AD0,UN1,SF1.00000000,EC0,EO0.0,AU0
+--SurvPC Version 6.09
+--CRD: Alphanumeric
+--User Defined: CANADA/NAD83/New Brunswick
+--Equipment:   Hemisphere GNSS,  S321, SN:D1910-03689-01-014, FW:5.9Aa08,4.17,2.01.180123
+--Localization File: None
+--Geoid Separation File: C:\Carlson Projects\Data\Geoids\Canadian_cgg2013.gsb N10°01'00.0" W169°58'59.0" N89°58'59.0" W010°01'00.0"
+--Grid Adjustment File: None
+--GPS Scale: 1.00000000
+--Scale Point not used
+--Base Configuration by Reading GPS Position
+--DT05-17-2024
+--TM11:02:14
+--Entered Base HR: 1.5000 m, Vertical
+--Antenna Type: [HEMS321         NONE],RA0.0730m,SHMP0.1050m,L10.1319m,L20.1389m,--Integrated GNSS ant/receiver     MMI ->N
+BP,PN0_BASE_1,LA45.503263533802,LN-66.065960469691,EL6.7085,AG1.5000,PA0.1319,ATAPC,SRBASE,--
+--GS,PN0_BASE_1,N 7426982.0850,E 2529785.2825,EL26.1332,--Base
+--GT,PN0_BASE_1,SW2314,ST482379000,EW2314,ET482379000
+--Entered Base HR: 1.5000 m, Vertical
+LS,HR1.6319
+--GPS Log File: 24012GJM240517.bin base open Hemisphere GNSS,S321
+--GNSSLOGRCVR,FL24012GJM240517.bin,SRBASE,RND1910-03689-01-014,RMHEMS321,RF5.9Aa08,4.17,2.01.180123
+--GNSSLOGANT,FL24012GJM240517.bin,AN,AMHEMS321         NONE,LI30000,AG1.500,PA0.132
+--Antenna Type: [HEMS321         NONE],RA0.0730m,SHMP0.1050m,L10.1319m,L20.1389m,--Integrated GNSS ant/receiver     MMI ->N
+--Localization File: G:\Shared drives\2020-2024 Projects\2024\24012 - Dwight Ferris - Restake - Route 105 - Jemseg\FieldRecords\24012GJM240517.loc
+--Number of Localization Points Used: 1
+--Localization Azimuth: State Plane Grid
+--GPS Scale Point N:7426602.63500000 E:2530122.73500000
+--RTK Method: Auto, Device: Internal UHF
+--Geoid Separation value for localization point 1 changed from 0.000 to -21.043 to match current geoid file setting.
+--Entered Rover HR: 2.0000 m, Vertical
+LS,HR2.1319
+GPS,PN5050,LA45.502033173001,LN-66.064406766459,EL-13.312712,--SMFD/DMSE 2024
+--GS,PN5050,N 7426602.6395,E 2530122.7269,EL-0.0217,--SMFD/DMSE 2024
+--GT,PN5050,SW2314,ST483523000,EW2314,ET483525000
+--Valid Readings: 3 of 3
+--Fixed Readings: 3 of 3
+--Nor Min: 7426602.6394  Max: 7426602.6397
+--Eas Min: 2530122.7259  Max: 2530122.7278
+--Elv Min: -0.0256  Max: -0.0149
+--Nor Avg: 7426602.6395  SD: 0.0002
+--Eas Avg: 2530122.7269  SD: 0.0008
+--Elv Avg: -0.0217  SD: 0.0048
+--HRMS Avg: 0.0077 SD: 0.0001 Min: 0.0077 Max: 0.0079
+--VRMS Avg: 0.0144 SD: 0.0001 Min: 0.0142 Max: 0.0146
+--HDOP Avg: 0.6851  Min: 0.6850 Max: 0.6851
+--VDOP Avg: 0.9107 Min: 0.9107 Max: 0.9109
+--PDOP Avg: 1.1396 Min: 1.1396 Max: 1.1397
+--AGE Avg: 1.0000 Min: 1.0000 Max: 1.0000
+--Number of Satellites Avg: 19 Min: 19 Max: 19
+--CTSS2:
+--CTSD0:Design Pt#,Design Sta,Design Off,Staked Sta,Staked Off,Design Elv,
+--CTSD1:Stake Elv,Cut,Fill,Desc,Stake Pt#,Stake Nor,Stake Eas,Delta X,Delta Y,
+--CTSD2:Design Off Ref,Design Elv Ref,Cut Ref,Fill Ref,Staked Sta Ref,
+--CTSD3:Staked Off Ref
+--CTSD0:PP,0+000.006,Right 0.000,0+000.006,Left 0.007,-0.003,-0.022,,0.019,
+--CTSD1:SMFD/DMSE 2024,5050,7426602.640,2530122.727,0.007,0.001,,,,,,
+--HRMS:0.008, VRMS:0.015, STATUS:FIXED, SATS:19, AGE:1.0, PDOP:1.140, HDOP:0.685, VDOP:0.911, TDOP:0.636, GDOP:1.305
+--DT05-17-2024
+--TM11:20:56
+GPS,PN5051,LA45.502207036896,LN-66.064444237266,EL-16.462723,--SMFD/DMSE 2024
+--GS,PN5051,N 7426656.2764,E 2530114.3793,EL-3.1709,--SMFD/DMSE 2024
+--GT,PN5051,SW2314,ST483737000,EW2314,ET483739000
+--Valid Readings: 3 of 3
+--Fixed Readings: 3 of 3
+--Nor Min: 7426656.2752  Max: 7426656.2775
+--Eas Min: 2530114.3780  Max: 2530114.3812
+--Elv Min: -3.1749  Max: -3.1682
+--Nor Avg: 7426656.2764  SD: 0.0009
+--Eas Avg: 2530114.3793  SD: 0.0014
+--Elv Avg: -3.1709  SD: 0.0029
+--HRMS Avg: 0.0088 SD: 0.0000 Min: 0.0088 Max: 0.0088
+--VRMS Avg: 0.0174 SD: 0.0003 Min: 0.0169 Max: 0.0177
+--HDOP Avg: 0.8201  Min: 0.8201 Max: 0.8201
+--VDOP Avg: 1.0611 Min: 1.0610 Max: 1.0612
+--PDOP Avg: 1.3411 Min: 1.3411 Max: 1.3411
+--AGE Avg: 1.0000 Min: 1.0000 Max: 1.0000
+--Number of Satellites Avg: 14 Min: 14 Max: 14
+--CTSS2:
+--CTSD0:Design Pt#,Design Sta,Design Off,Staked Sta,Staked Off,Design Elv,
+--CTSD1:Stake Elv,Cut,Fill,Desc,Stake Pt#,Stake Nor,Stake Eas,Delta X,Delta Y,
+--CTSD2:Design Off Ref,Design Elv Ref,Cut Ref,Fill Ref,Staked Sta Ref,
+--CTSD3:Staked Off Ref
+--CTSD0:PP,0+000.008,Right 0.000,0+000.008,Left 0.001,-26.936,-3.171,23.765,,
+--CTSD1:SMFD/DMSE 2024,5051,7426656.276,2530114.379,-0.001,-0.000,,,,,,
+--HRMS:0.009, VRMS:0.017, STATUS:FIXED, SATS:14, AGE:1.0, PDOP:1.341, HDOP:0.820, VDOP:1.061, TDOP:0.777, GDOP:1.550
+--DT05-17-2024
+--TM11:24:29
+GPS,PN5052,LA45.502206638357,LN-66.064446515490,EL-16.375559,--SMPL/RESET
+--GS,PN5052,N 7426656.1509,E 2530113.8883,EL-3.0837,--SMPL/RESET
+--GT,PN5052,SW2314,ST484032000,EW2314,ET484034000
+--Valid Readings: 3 of 3
+--Fixed Readings: 3 of 3
+--Nor Min: 7426656.1476  Max: 7426656.1562
+--Eas Min: 2530113.8854  Max: 2530113.8915
+--Elv Min: -3.0896  Max: -3.0794
+--Nor Avg: 7426656.1509  SD: 0.0038
+--Eas Avg: 2530113.8883  SD: 0.0025
+--Elv Avg: -3.0837  SD: 0.0043
+--HRMS Avg: 0.0126 SD: 0.0001 Min: 0.0124 Max: 0.0127
+--VRMS Avg: 0.0241 SD: 0.0004 Min: 0.0235 Max: 0.0246
+--HDOP Avg: 0.8285  Min: 0.8038 Max: 0.8777
+--VDOP Avg: 1.1246 Min: 1.0408 Max: 1.2920
+--PDOP Avg: 1.3974 Min: 1.3151 Max: 1.5619
+--AGE Avg: 1.0000 Min: 1.0000 Max: 1.0000
+--Number of Satellites Avg: 14 Min: 14 Max: 15
+--CTSS2:
+--CTSD0:Design Pt#,Design Sta,Design Off,Staked Sta,Staked Off,Design Elv,
+--CTSD1:Stake Elv,Cut,Fill,Desc,Stake Pt#,Stake Nor,Stake Eas,Delta X,Delta Y,
+--CTSD2:Design Off Ref,Design Elv Ref,Cut Ref,Fill Ref,Staked Sta Ref,
+--CTSD3:Staked Off Ref
+--CTSD0:PP,0+000.003,Right 0.000,0+000.003,Left 0.015,0.000,-3.084,,3.084,
+--CTSD1:SMPL/RESET,5052,7426656.151,2530113.888,-0.015,-0.002,,,,,,
+--HRMS:0.013, VRMS:0.025, STATUS:FIXED, SATS:15, AGE:1.0, PDOP:1.315, HDOP:0.804, VDOP:1.041, TDOP:0.769, GDOP:1.523
+--DT05-17-2024
+--TM11:29:24
+GPS,PN5053,LA45.502206631165,LN-66.064446557766,EL-16.227775,--SMPL/RESET
+--GS,PN5053,N 7426656.1487,E 2530113.8792,EL-2.9359,--SMPL/RESET
+--GT,PN5053,SW2314,ST484054000,EW2314,ET484056000
+--Valid Readings: 3 of 3
+--Fixed Readings: 3 of 3
+--Nor Min: 7426656.1445  Max: 7426656.1519
+--Eas Min: 2530113.8768  Max: 2530113.8837
+--Elv Min: -2.9375  Max: -2.9330
+--Nor Avg: 7426656.1487  SD: 0.0031
+--Eas Avg: 2530113.8792  SD: 0.0032
+--Elv Avg: -2.9359  SD: 0.0021
+--HRMS Avg: 0.0113 SD: 0.0001 Min: 0.0111 Max: 0.0115
+--VRMS Avg: 0.0211 SD: 0.0002 Min: 0.0209 Max: 0.0213
+--HDOP Avg: 0.7376  Min: 0.7376 Max: 0.7376
+--VDOP Avg: 0.9136 Min: 0.9135 Max: 0.9136
+--PDOP Avg: 1.1742 Min: 1.1742 Max: 1.1742
+--AGE Avg: 1.0000 Min: 1.0000 Max: 1.0000
+--Number of Satellites Avg: 16 Min: 16 Max: 17
+--CTSS2:
+--CTSD0:Design Pt#,Design Sta,Design Off,Staked Sta,Staked Off,Design Elv,
+--CTSD1:Stake Elv,Cut,Fill,Desc,Stake Pt#,Stake Nor,Stake Eas,Delta X,Delta Y,
+--CTSD2:Design Off Ref,Design Elv Ref,Cut Ref,Fill Ref,Staked Sta Ref,
+--CTSD3:Staked Off Ref
+--CTSD0:PP,0+000.003,Right 0.000,0+000.003,Left 0.006,0.000,-2.936,,2.936,
+--CTSD1:SMPL/RESET,5053,7426656.149,2530113.879,-0.006,-0.001,,,,,,
+--HRMS:0.011, VRMS:0.021, STATUS:FIXED, SATS:17, AGE:1.0, PDOP:1.174, HDOP:0.738, VDOP:0.914, TDOP:0.658, GDOP:1.346
+--DT05-17-2024
+--TM11:29:46
