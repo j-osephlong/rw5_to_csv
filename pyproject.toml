@@ -10,11 +10,13 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
-
+description="Parse RW5 files into CSV files of GPS and SS records."
 authors = [
   {name = "Joseph Long", email = "joseph.long@dmse.ca"},
 ]
 readme = "README.md"
+license="BSD"
+keywords="rw5 totalstation processing"
 
 [project.urls]
 Source = "https://github.com/j-osephlong/rw5_to_csv"
