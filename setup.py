@@ -1,6 +1,6 @@
 import os
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 # Utility function to read the README file.
@@ -20,7 +20,7 @@ setup(
     license="BSD",
     keywords="rw5 totalstation processing",
     url="https://github.com/j-osephlong/rw5_to_csv",
-    packages=["rw5_to_csv", "tests"],
+    packages=find_packages("."),
     long_description=read("README.md"),
     classifiers=[
         "Programming Language :: Python :: 3",
