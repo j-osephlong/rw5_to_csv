@@ -15,8 +15,8 @@ authors = [
   {name = "Joseph Long", email = "joseph.long@dmse.ca"},
 ]
 readme = "README.md"
-license="BSD"
-keywords="rw5 totalstation processing"
+license = {text = "MIT License"}
+keywords = ["rw5", "totalstation", "processing"]
 
 [project.urls]
 Source = "https://github.com/j-osephlong/rw5_to_csv"

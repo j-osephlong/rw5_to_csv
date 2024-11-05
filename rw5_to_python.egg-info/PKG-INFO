@@ -5,9 +5,9 @@ Summary: Parse RW5 files into CSV files of GPS and SS records.
 Home-page: https://github.com/j-osephlong/rw5_to_csv
 Author: Joseph Long
 Author-email: Joseph Long <joseph.long@dmse.ca>
-License: BSD
+License: MIT License
 Project-URL: Source, https://github.com/j-osephlong/rw5_to_csv
-Keywords: rw5 totalstation processing
+Keywords: rw5,totalstation,processing
 Classifier: Programming Language :: Python :: 3
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.10
