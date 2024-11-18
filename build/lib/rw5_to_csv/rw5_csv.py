@@ -15,9 +15,9 @@ import sys
 from pathlib import Path
 from typing import TypedDict
 
-from machine_state import MachineState
-from records.record import RW5CSVRow, get_standard_record_params_dict
-from records.records_parsers import RECORD_CSV_PARSERS
+from rw5_to_csv.machine_state import MachineState
+from rw5_to_csv.records.record import RW5CSVRow, get_standard_record_params_dict
+from rw5_to_csv.records.records_parsers import RECORD_CSV_PARSERS
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 logger = logging.getLogger(__name__)
@@ -34,6 +34,9 @@ class RW5Prelude(TypedDict):
     Equipment: str | None
     SerialNumber: str | None
     AntennaType: str | None
+
+
+SKIP_LINES_WITH_PREFIXES = ["G0", "G1", "G2", "G3"]
 
 
 def get_prelude(rw5_path: Path) -> RW5Prelude:
@@ -139,11 +142,27 @@ def group_lines_into_command_blocks(lines: list[str]) -> list[list[str]]:
         --blahs blah blah blah
         --blah                              // Command ends
         GPS ____________________________    // New command starts
+
+    Some lines start with prefixes that we want to ignore and not interrupt the record that they're within
+
+    Example:
+        GPS _____________________________   // Command starts
+        --blahs blah blah
+        G0 blah blah                        // Skip this line (prefix == G0)
+        G1 blah blah                        // Skip this line
+        G2 blah blah                        // Skip this line
+        --blahs blah blah blah
+        --blah                              // Command ends
+        GPS ____________________________    // New command starts
     """
 
     stripped_lines = [line.strip() for line in lines]
 
     for line in stripped_lines:
+        # skips lines with specific prefixes, act line they're not even there.
+        if any(line.startswith(prefix) for prefix in SKIP_LINES_WITH_PREFIXES):
+            continue
+
         line_is_comment = line.startswith("--")
         # If theres an active command and this line isn't comment
         #   Finish active command, start new command
@@ -153,6 +172,7 @@ def group_lines_into_command_blocks(lines: list[str]) -> list[list[str]]:
 
         # Append current line to active_command
         active_command.append(line)
+
     if len(active_command) > 0:
         commands.append(active_command)
 

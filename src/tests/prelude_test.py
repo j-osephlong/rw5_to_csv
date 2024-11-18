@@ -3,7 +3,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from rw5_csv import get_prelude
+from rw5_to_csv.rw5_csv import get_prelude
 
 
 def test_parse_prelude():
@@ -56,12 +56,6 @@ def test_parse_prelude_missing_fields():
         assert prelude_data["Time"] == "14:22:14"
         assert prelude_data["ISODateTime"] == "2024-06-11T14:22:14"
         assert prelude_data["SerialNumber"] is None
-        assert (
-            prelude_data["Equipment"]
-            is None
-        )
-        assert (
-            prelude_data["AntennaType"]
-            is None
-        )
+        assert prelude_data["Equipment"] is None
+        assert prelude_data["AntennaType"] is None
         assert prelude_data["UserDefined"] is None

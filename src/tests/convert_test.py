@@ -4,15 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from records.record import RW5CSVRow
-from rw5_csv import convert, group_lines_into_command_blocks
+from rw5_to_csv.records.record import RW5CSVRow
+from rw5_to_csv.rw5_csv import convert, group_lines_into_command_blocks
 
 test_rw5_files__convert: list[tuple[Path, int, int]] = [
-    (Path("./tests/data/test.1.rw5"), 70, 0),
-    (Path("./tests/data/test.2.rw5"), 4, 0),
-    (Path("./tests/data/test.3.rw5"), 0, 161),
-    (Path("./tests/data/test.4.rw5"), 25, 413),
-    (Path("./tests/data/test.5.rw5"), 108, 73),
+    (Path("./src/tests/data/test.1.rw5"), 70, 0),
+    (Path("./src/tests/data/test.2.rw5"), 4, 0),
+    (Path("./src/tests/data/test.3.rw5"), 0, 161),
+    (Path("./src/tests/data/test.4.rw5"), 25, 413),
+    (Path("./src/tests/data/test.5.rw5"), 108, 73),
+    (Path("./src/tests/data/test.6.rw5"), 61, 0),
 ]
 """Path, GPS record count, SS record count."""
 
@@ -37,11 +38,12 @@ def test_convert(
 
 
 test_rw5_files__command_blocks: list[tuple[Path, int, int]] = [
-    (Path("./tests/data/test.1.rw5"), 78, 1420),
-    (Path("./tests/data/test.2.rw5"), 9, 145),
-    (Path("./tests/data/test.3.rw5"), 187, 568),
-    (Path("./tests/data/test.4.rw5"), 518, 1967),
-    (Path("./tests/data/test.5.rw5"), 228, 2649),
+    (Path("./src/tests/data/test.1.rw5"), 78, 1420),
+    (Path("./src/tests/data/test.2.rw5"), 9, 145),
+    (Path("./src/tests/data/test.3.rw5"), 187, 568),
+    (Path("./src/tests/data/test.4.rw5"), 518, 1967),
+    (Path("./src/tests/data/test.5.rw5"), 228, 2649),
+    (Path("./src/tests/data/test.6.rw5"), 69, 1436),
 ]
 """Path, expected_num_records, expected_num_lines."""
 

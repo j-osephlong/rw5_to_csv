@@ -4,7 +4,7 @@
         "S101"
     ],
     "python.testing.pytestArgs": [
-        "tests"
+        "src"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true

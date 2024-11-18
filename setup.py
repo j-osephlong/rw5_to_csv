@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name="rw5_to_python",
-    version="0.1.0",
+    version="0.2.0",
     author="Joseph Long",
     author_email="joseph.long@dmse.ca",
     description="Parse RW5 files into CSV files of GPS and SS records.",
