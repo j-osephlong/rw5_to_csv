@@ -13,6 +13,6 @@ def parse_ls_record(
     if "HI" in ls_record_params:
         machine_state["HI"] = float(ls_record_params["HI"])
     if "HR" in ls_record_params:
-        machine_state["HR"] = float(ls_record_params["HR"])
+        machine_state["MeasuredHR"] = float(ls_record_params["HR"])
 
     return None

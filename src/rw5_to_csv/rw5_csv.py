@@ -16,7 +16,11 @@ from pathlib import Path
 from typing import TypedDict
 
 from rw5_to_csv.machine_state import MachineState
-from rw5_to_csv.records.record import RW5CSVRow, get_standard_record_params_dict
+from rw5_to_csv.records.record import (
+    RW5CSVRow,
+    get_standard_record_params_dict,
+    handle_machine_state_rover_height,
+)
 from rw5_to_csv.records.records_parsers import RECORD_CSV_PARSERS
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
@@ -138,6 +142,8 @@ def parse_command(
     """
     record_type = command_block[0].split(",")[0]
 
+    handle_machine_state_rover_height(command_block, machine_state)
+    print("!/", machine_state)
     if record_type in RECORD_CSV_PARSERS:
         return RECORD_CSV_PARSERS[record_type](command_block, machine_state)
     return None
@@ -201,7 +207,8 @@ def convert(rw5_path: Path, output_path: Path | None):
     machine_state = MachineState(
         {
             "HI": None,
-            "HR": None,
+            "EnteredHR": None,
+            "MeasuredHR": None,
         },
     )
 
