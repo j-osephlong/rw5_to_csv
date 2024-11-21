@@ -32,14 +32,38 @@ class RW5Prelude(TypedDict):
     ISODateTime: str
     UserDefined: str | None
     Equipment: str | None
-    SerialNumber: str | None
     AntennaType: str | None
 
 
 SKIP_LINES_WITH_PREFIXES = ["G0", "G1", "G2", "G3"]
 
 
-def get_prelude(rw5_path: Path) -> RW5Prelude:
+def _prelude_get_equipment(command_blocks: list[list[str]]) -> str:
+    equipment_prefix = "--Equipment:"
+    equipment_strings = []
+    for command in command_blocks:
+        for line in command:
+            if line.startswith(equipment_prefix):
+                # skip items with same serial number as already observed
+                if "SN:" in line:
+                    serial_number_start_index = line.index("SN:") + 3
+                    serial_number_end_index = line.index(",", serial_number_start_index)
+                    serial_number = line[
+                        serial_number_start_index:serial_number_end_index
+                    ]
+                    if next(
+                        (es for es in list(equipment_strings) if serial_number in es),
+                        None,
+                    ):
+                        continue
+                if line in equipment_strings:
+                    continue
+                equipment_strings.append(line.removeprefix(equipment_prefix).strip())
+
+    return ",\n".join(list(equipment_strings))
+
+
+def prelude(rw5_path: Path) -> RW5Prelude:
     """Get fields from the prelude of an RW5 file.
 
     Parses JB and MO records.
@@ -81,18 +105,12 @@ def get_prelude(rw5_path: Path) -> RW5Prelude:
     mo_record = mo_record_matches[0]
 
     user_defined = None
-    equipment = None
-    serial_number = None
+    equipment = _prelude_get_equipment(command_blocks)
     antenna_type = None
 
     for line in mo_record:
         if line.startswith("--User Defined:"):
             user_defined = line.removeprefix("--User Defined:").strip()
-        if line.startswith("--Equipment:"):
-            equipment = line.removeprefix("--Equipment:").strip()
-            serial_number_start_index = equipment.index("SN:") + 3
-            serial_number_end_index = equipment.index(",", serial_number_start_index)
-            serial_number = equipment[serial_number_start_index:serial_number_end_index]
         if line.startswith("--Antenna Type:"):
             antenna_type = line.removeprefix("--Antenna Type:").strip()
 
@@ -103,7 +121,6 @@ def get_prelude(rw5_path: Path) -> RW5Prelude:
         ISODateTime=date_time_iso,
         UserDefined=user_defined,
         Equipment=equipment,
-        SerialNumber=serial_number,
         AntennaType=antenna_type,
     )
 
@@ -223,7 +240,7 @@ if __name__ == "__main__":
     input_path = Path(args.input)
     output_path = Path(args.output) if args.output else None
     if args.prelude:
-        prelude = get_prelude(input_path)
-        logger.info(pprint.pformat(prelude))
+        p = prelude(input_path)
+        logger.info(pprint.pformat(p))
     else:
         convert(input_path, output_path)
