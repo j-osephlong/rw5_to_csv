@@ -73,7 +73,7 @@ def prelude(rw5_path: Path) -> RW5Prelude:
     Parses JB and MO records.
     """
     command_blocks = []
-    with rw5_path.open("r") as input_file:
+    with rw5_path.open("r", encoding="iso8859-1") as input_file:
         command_blocks = group_lines_into_command_blocks(input_file.readlines())
     jb_record_matches = [
         block for block in command_blocks if block[0].split(",")[0] == "JB"
@@ -199,7 +199,7 @@ def group_lines_into_command_blocks(lines: list[str]) -> list[list[str]]:
     if len(active_command) > 0:
         commands.append(active_command)
 
-    return commands  # noqa: DOC201
+    return commands
 
 
 def convert(rw5_path: Path, output_path: Path | None):
@@ -214,7 +214,7 @@ def convert(rw5_path: Path, output_path: Path | None):
 
     command_blocks = []
 
-    with rw5_path.open("r") as input_file:
+    with rw5_path.open("r", encoding="iso8859-1") as input_file:
         command_blocks.extend(group_lines_into_command_blocks(input_file.readlines()))
 
     parsed_commands: list[RW5CSVRow] = []
