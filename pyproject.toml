@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "rw5_to_csv"
 version = "0.1.0"
-requires-python = ">= 3.10"
+requires-python = ">= 3.9.18"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",

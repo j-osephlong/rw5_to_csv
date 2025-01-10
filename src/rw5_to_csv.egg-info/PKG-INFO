@@ -10,7 +10,7 @@ Project-URL: Source, https://github.com/j-osephlong/rw5_to_csv
 Keywords: rw5,totalstation,processing
 Classifier: Programming Language :: Python :: 3
 Classifier: Operating System :: OS Independent
-Requires-Python: >=3.10
+Requires-Python: >=3.9.18
 Description-Content-Type: text/markdown
 
 # RW5 to CSV
