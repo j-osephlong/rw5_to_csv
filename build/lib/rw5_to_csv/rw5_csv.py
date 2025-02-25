@@ -19,7 +19,6 @@ from rw5_to_csv.machine_state import MachineState
 from rw5_to_csv.records.record import (
     RW5CSVRow,
     get_standard_record_params_dict,
-    handle_machine_state_rover_height,
 )
 from rw5_to_csv.records.records_parsers import RECORD_CSV_PARSERS
 
@@ -142,8 +141,6 @@ def parse_command(
     """
     record_type = command_block[0].split(",")[0]
 
-    handle_machine_state_rover_height(command_block, machine_state)
-    print("!/", machine_state)
     if record_type in RECORD_CSV_PARSERS:
         return RECORD_CSV_PARSERS[record_type](command_block, machine_state)
     return None
@@ -202,13 +199,15 @@ def group_lines_into_command_blocks(lines: list[str]) -> list[list[str]]:
     return commands
 
 
-def convert(rw5_path: Path, output_path: Path | None):
+def convert(rw5_path: Path, output_path: Path | None, tzinfo: datetime._TzInfo | None = None):
     """Convert rw5 file to a csv file."""
     machine_state = MachineState(
         {
+            "ProcessedCommandBlocks": [],
             "HI": None,
-            "EnteredHR": None,
-            "MeasuredHR": None,
+            "HR": None,
+            "InstrumentType": "",
+            "tzinfo": tzinfo,
         },
     )
 
@@ -221,6 +220,7 @@ def convert(rw5_path: Path, output_path: Path | None):
 
     for command_block in command_blocks:
         parsed_command = parse_command(command_block, machine_state)
+        machine_state["ProcessedCommandBlocks"].append(command_block)
         if parsed_command:
             parsed_commands.append(parsed_command)
 

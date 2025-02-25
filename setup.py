@@ -26,4 +26,5 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
+    package_data={"rw5_to_csv": ["py.typed"]},
 )

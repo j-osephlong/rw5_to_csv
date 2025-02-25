@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+import datetime
 from decimal import Decimal
 from logging import getLogger
 
 from rw5_to_csv.machine_state import MachineState
+from rw5_to_csv.records.common import get_date_time
 from rw5_to_csv.records.record import RW5CSVRow, get_standard_record_params_dict
 
 logger = getLogger(__file__)
 
 HRMS_LINE_START = "--HRMS Avg:"
 VRMS_LINE_START = "--VRMS Avg:"
+NUM_SATELLITES_LINE_START = "--Number of Satellites Avg:"
+AGE_LINE_START = "--AGE Avg:"
 HDOP_LINE_START = "--HDOP Avg:"
 VDOP_LINE_START = "--VDOP Avg:"
 PDOP_LINE_START = "--PDOP Avg:"
@@ -80,36 +84,52 @@ def _get_vrms(command_block: list[str]) -> float:
     )
 
 
-def _get_fixed(command_block: list[str]) -> bool | None:
+def _get_status(command_block: list[str]) -> str | None:
     hrms_line_params = _get_hrms_line_params(command_block)
     if hrms_line_params:
         # Type A parsing.
-        return hrms_line_params["STATUS"] in {"FIXED", "FIXED+"}
+        return hrms_line_params["STATUS"]
+    return None
 
-    # Type B parsing.
-    logger.info(
-        "Type A parsing for fixed status failed, fixed status line not found. Trying Type B.",
-    )
-    """Parse fixed status (when # readings == # fixedd readings):
-        --Fixed Readings: 10 of 10
-        """
-    fixed_line_match = [
-        line
-        for line in command_block
-        if line.strip().startswith(FIXED_READINGS_LINE_START)
+
+def _get_number_of_satellites(command_block: list[str]) -> str | None:
+    hrms_line_params = _get_hrms_line_params(command_block)
+    if hrms_line_params:
+        # Type A parsing.
+        return hrms_line_params["SATS"]
+
+    sats_line_match = [
+        line for line in command_block if line.strip().startswith(NUM_SATELLITES_LINE_START)
     ]
-    if len(fixed_line_match) == 0:
-        logger.info(
-            "Type B parsing for fixed status failed, fixed status line not found. Returning None.",
-        )
+    if len(sats_line_match) == 0:
         return None
-    fixed_readings_line = fixed_line_match[0].strip()
-    fixed_readings = fixed_readings_line.removeprefix(
-        FIXED_READINGS_LINE_START,
-    ).strip()
 
-    [fixed_readings_count, readings_count] = fixed_readings.split(" of ")
-    return fixed_readings_count == readings_count
+    sats_line = sats_line_match[0].strip()
+    return (
+        sats_line[
+            len(NUM_SATELLITES_LINE_START) : sats_line.find("Min:", len(NUM_SATELLITES_LINE_START))
+        ].strip()
+    )
+
+
+def _get_age_of_corrections(command_block: list[str]) -> str | None:
+    hrms_line_params = _get_hrms_line_params(command_block)
+    if hrms_line_params:
+        # Type A parsing.
+        return hrms_line_params["AGE"]
+
+    age_line_match = [
+        line for line in command_block if line.strip().startswith(AGE_LINE_START)
+    ]
+    if len(age_line_match) == 0:
+        return None
+
+    age_line = age_line_match[0].strip()
+    return (
+        age_line[
+            len(AGE_LINE_START) : age_line.find("Min:", len(AGE_LINE_START))
+        ].strip()
+    )
 
 
 def _get_hdop(command_block: list[str]) -> float | None:
@@ -193,6 +213,22 @@ def _get_pdop(command_block: list[str]) -> float | None:
     )
 
 
+def _get_tdop(command_block: list[str]) -> float | None:
+    hrms_line_params = _get_hrms_line_params(command_block)
+    if hrms_line_params:
+        # Type A parsing.
+        return float(hrms_line_params["TDOP"])
+    return None
+
+
+def _get_gdop(command_block: list[str]) -> float | None:
+    hrms_line_params = _get_hrms_line_params(command_block)
+    if hrms_line_params:
+        # Type A parsing.
+        return float(hrms_line_params["GDOP"])
+    return None
+
+
 def parse_gps_record(
     command_block: list[str],
     machine_state: MachineState,
@@ -206,10 +242,15 @@ def parse_gps_record(
     try:
         hrms = _get_hrms(command_block)
         vrms = _get_vrms(command_block)
-        is_fixed = _get_fixed(command_block)
+        status = _get_status(command_block)
         hdop = _get_hdop(command_block)
         vdop = _get_vdop(command_block)
         pdop = _get_pdop(command_block)
+        tdop = _get_tdop(command_block)
+        gdop = _get_gdop(command_block)
+        num_sats = _get_number_of_satellites(command_block)
+        age = _get_age_of_corrections(command_block)
+        dt = get_date_time(command_block, machine_state["tzinfo"] or datetime.UTC)
     except ValueError:
         logger.exception("Skipping record.")
         return None
@@ -227,10 +268,15 @@ def parse_gps_record(
         HDOP=hdop,
         VDOP=vdop,
         PDOP=pdop,
-        Fixed=is_fixed,
+        TDOP=tdop,
+        GDOP=gdop,
+        Status=status,
+        NumSatellites=num_sats,
+        Age=age,
         Note=first_line_params["--"],
         RW5RecordType="GPS",
-        MeasuredRodHeight=machine_state["MeasuredHR"],
-        EnteredRodHeight=machine_state["EnteredHR"],
+        RodHeight=machine_state["HR"],
         InstrumentHeight=machine_state["HI"],
+        InstrumentType=machine_state["InstrumentType"],
+        DateTime=dt,
     )
