@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from rw5_to_csv.machine_state import MachineState
+from rw5_to_csv.records.bp import parse_bp_record
 from rw5_to_csv.records.gps import parse_gps_record
 from rw5_to_csv.records.ls import parse_ls_record
 from rw5_to_csv.records.record import RW5CSVRow
@@ -12,4 +13,5 @@ RECORD_CSV_PARSERS: dict[str, Callable[[list[str], MachineState], RW5CSVRow | No
     "GPS": parse_gps_record,
     "LS": parse_ls_record,
     "SS": parse_ss_record,
+    "BP": parse_bp_record,
 }

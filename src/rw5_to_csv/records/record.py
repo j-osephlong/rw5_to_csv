@@ -12,9 +12,9 @@ class RW5CSVRow(TypedDict):
     Lat: float
     Lng: float
     Elevation: float
-    LocalX: Decimal
-    LocalY: Decimal
-    LocalZ: Decimal
+    LocalX: Decimal | None
+    LocalY: Decimal | None
+    LocalZ: Decimal | None
     HRMS: float | None
     VRMS: float | None
     Status: str | None
