@@ -6,11 +6,9 @@ Copyright (C) 2014 Joseph Long
 
 from __future__ import annotations
 
-import argparse
 import csv
 import datetime
 import logging
-import pprint
 import sys
 from pathlib import Path
 from typing import TypedDict
@@ -211,18 +209,39 @@ def convert(rw5_path: Path, output_path: Path | None, tzinfo: datetime._TzInfo |
         },
     )
 
-    command_blocks = []
-
     with rw5_path.open("r", encoding="iso8859-1") as input_file:
-        command_blocks.extend(group_lines_into_command_blocks(input_file.readlines()))
+        command_blocks = group_lines_into_command_blocks(input_file.readlines())
 
-    parsed_commands: list[RW5CSVRow] = []
+    rows: list[RW5CSVRow] = []
+    visited_point_ids = set()
 
     for command_block in command_blocks:
-        parsed_command = parse_command(command_block, machine_state)
+        curr_row = parse_command(command_block, machine_state)
         machine_state["ProcessedCommandBlocks"].append(command_block)
-        if parsed_command:
-            parsed_commands.append(parsed_command)
+
+        if not curr_row:
+            continue
+
+        # if we've seen a record with this point ID before, replace the old one
+        if curr_row["PointID"] in visited_point_ids:
+            # get index of old record
+            old_row_index = next(
+                (index for index, other_row in enumerate(rows)
+                if other_row["PointID"] == curr_row["PointID"]
+                and other_row["RW5RecordType"] == curr_row["RW5RecordType"]),
+                None,
+            )
+            if old_row_index:
+                # set overwritten flag
+                curr_row["Overwritten"] = True
+                rows[old_row_index] = curr_row
+                print(f"Overwriting previous record that had same point ID, {curr_row['PointID']}.")
+                # skip rest of iteration
+                continue
+
+        # we've never seen this point id before, so just add it to end of lists
+        visited_point_ids.add(curr_row["PointID"])
+        rows.append(curr_row)
 
     if output_path:
         with output_path.open("w") as csv_file:
@@ -233,21 +252,6 @@ def convert(rw5_path: Path, output_path: Path | None, tzinfo: datetime._TzInfo |
                 lineterminator="\n",
             )
             writer.writeheader()
-            writer.writerows(parsed_commands)
+            writer.writerows(rows)
 
-    return parsed_commands
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Convert RW5 files to CSV files.")
-    parser.add_argument("-i", "--input")
-    parser.add_argument("-o", "--output")
-    parser.add_argument("--prelude", action="store_true")
-    args = parser.parse_args()
-    input_path = Path(args.input)
-    output_path = Path(args.output) if args.output else None
-    if args.prelude:
-        p = prelude(input_path)
-        logger.info(pprint.pformat(p))
-    else:
-        convert(input_path, output_path)
+    return rows
