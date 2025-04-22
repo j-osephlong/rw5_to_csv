@@ -31,6 +31,7 @@ class RW5CSVRow(TypedDict):
     InstrumentHeight: float | None
     InstrumentType: str
     DateTime: datetime.datetime | None
+    Overwritten: bool
 
 
 def get_standard_record_params_dict(record: str) -> dict[str, str]:

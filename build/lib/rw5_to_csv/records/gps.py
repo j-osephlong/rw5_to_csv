@@ -6,7 +6,7 @@ from logging import getLogger
 from machine_state import MachineState
 from records.record import RW5CSVRow, get_standard_record_params_dict
 
-logger = getLogger(__file__)
+logger = getLogger(__name__)
 
 HRMS_LINE_START = "--HRMS Avg:"
 VRMS_LINE_START = "--VRMS Avg:"

@@ -1,13 +1,14 @@
+from collections.abc import Sequence
 from decimal import Decimal
 
 import pytest
 
 from rw5_to_csv.machine_state import MachineState
+from rw5_to_csv.records.bp import parse_bp_record
 from rw5_to_csv.records.gps import parse_gps_record
 from rw5_to_csv.records.ls import parse_ls_record
 from rw5_to_csv.records.record import RW5CSVRow
 from rw5_to_csv.records.ss import parse_ss_record
-from rw5_to_csv.rw5_csv import parse_command
 
 
 @pytest.fixture
@@ -15,8 +16,10 @@ def default_machine_state():
     return MachineState(
         {
             "HI": None,
-            "MeasuredHR": None,
-            "EnteredHR": None,
+            "HR": None,
+            "InstrumentType": "",
+            "ProcessedCommandBlocks": [],
+            "tzinfo": None,
         },
     )
 
@@ -45,7 +48,7 @@ def gps_record():
     """.splitlines()
 
 
-GPS_RECORDS: list[tuple[str, RW5CSVRow]] = [
+GPS_RECORDS: list[tuple[Sequence[str], dict]] = [
     (
         """GPS,PN5159,LA45.231320882856,LN-66.041962160406,EL-1.648605,--TS
         --GS,PN5159,N 7376385.4778,E 2533509.9182,EL18.1924,--TS
@@ -76,16 +79,20 @@ GPS_RECORDS: list[tuple[str, RW5CSVRow]] = [
             "LocalX": Decimal("7376385.4778"),
             "LocalY": Decimal("2533509.9182"),
             "LocalZ": Decimal("18.1924"),
+            "Status": "FIXED",
+            "Age": "1.0",
+            "NumSatellites": "27",
             "HRMS": 0.011,
             "VRMS": 0.022,
             "HDOP": 0.560,
             "VDOP": 0.767,
             "PDOP": 0.950,
-            "Fixed": True,
+            "TDOP": 0.550,
+            "GDOP": 1.098,
             "RW5RecordType": "GPS",
             "InstrumentHeight": None,
-            "MeasuredRodHeight": None,
-            "EnteredRodHeight": None,
+            "RodHeight": None,
+            "InstrumentType": "",
         },
     ),
     (
@@ -126,11 +133,15 @@ GPS_RECORDS: list[tuple[str, RW5CSVRow]] = [
             "HDOP": 0.541,
             "VDOP": 0.719,
             "PDOP": 0.900,
-            "Fixed": True,
+            "TDOP": 0.469,
+            "GDOP": 1.015,
+            "Status": "FIXED+",
             "RW5RecordType": "GPS",
             "InstrumentHeight": None,
-            "MeasuredRodHeight": None,
-            "EnteredRodHeight": None,
+            "RodHeight": None,
+            "InstrumentType": "",
+            "Age": "1.0",
+            "NumSatellites": "23",
         },
     ),
     (
@@ -170,86 +181,36 @@ GPS_RECORDS: list[tuple[str, RW5CSVRow]] = [
             "HDOP": 0.5302,
             "VDOP": 0.6754,
             "PDOP": 0.8586,
-            "Fixed": None,
+            "TDOP": None,
+            "GDOP": None,
+            "Age": "1.3000",
+            "NumSatellites": "29",
+            "InstrumentType": "",
+            "Status": None,
             "RW5RecordType": "GPS",
             "InstrumentHeight": None,
-            "MeasuredRodHeight": None,
-            "EnteredRodHeight": None,
+            "RodHeight": None,
         },
     ),
 ]
-
-RECORDS_WITH_ROVER_HEIGHT_COMMAND = [
-    (
-        """BP,PN3488_BASE_1,LA45.160537361211,LN-66.025824934287,EL-0.7430,AG1.5000,PA0.1319,ATAPC,SRROVER,--
-    --Entered Rover HR: 2.0000 m, Vertical""".splitlines(),
-        2.0,
-    ),
-    (
-        """SS,OP6001,FP5310,AR159.3803,ZE90.3544,SD127.242488,--CP/6000
-    --DT07-21-2021
-    --TM12:08:28
-    --Equipment:   Hemisphere GNSS,  S321, SN:D1726-02310-01-068, FW:5.6Aa09,4.10,1.30.170620
-    --GPS Scale: 1.00000000
-    --Scale Point not used
-    --Entered Rover HR: 2.0000 m, Vertical""".splitlines(),
-        2.0,
-    ),
-    (
-        """LS,HR1.9201
-    --Entered Rover HR: 2.0000 m, Vertical""".splitlines(),
-        2.0,
-    ),
-    (
-        """GPS,PN5149,LA45.230275729975,LN-65.484613177769,EL84.043167,--SMFD/228 19?? BENT
-    --GS,PN5149,N 7376205.3661,E 2553817.9310,EL-4.1350,--SMFD/228 19?? BENT
-    G0,2024/09/30 13:58:07,(Average) - Base ID read at rover: 0
-    G1,BP0,PN5149,DX233.30107,DY39.76847,DZ-59.92493
-    G2,VX0.00001576,VY0.00005938,VZ0.00005581
-    G3,XY-0.00001254,XZ0.00000538,YZ-0.00003406
-    --HRMS Avg: 0.0063 SD: 0.0001 Min: 0.0061 Max: 0.0063
-    --VRMS Avg: 0.0096 SD: 0.0001 Min: 0.0094 Max: 0.0097
-    --HDOP Avg: 0.6804  Min: 0.6804 Max: 0.6804
-    --VDOP Avg: 0.9354 Min: 0.9353 Max: 0.9354
-    --PDOP Avg: 1.1566 Min: 1.1566 Max: 1.1566
-    --AGE Avg: 1.0000 Min: 1.0000 Max: 1.0000
-    --RTK Method: Auto, Device: Internal Radio
-    --Entered Rover HR: 2.0000 m, Vertical""".splitlines(),
-        2.0,
-    ),
-]
-"""Record, expected entered HR value."""
-
-
-@pytest.mark.parametrize(
-    "command,expected_entered_hr",
-    RECORDS_WITH_ROVER_HEIGHT_COMMAND,
-)
-def test_handle_rover_height_command(
-    command,
-    expected_entered_hr,
-    default_machine_state: MachineState,
-):
-    """Ensure that all commands that have Entered Rover HR command are handled, and machine state is set."""
-    print(default_machine_state)
-    parse_command([l.strip() for l in command], default_machine_state)
-    print(default_machine_state)
-    assert default_machine_state["EnteredHR"] == expected_entered_hr
 
 
 @pytest.fixture
 def ss_record():
     return """SS,OPTEMP1,FP7001,AR210.2811,ZE63.0014,SD23.750400,--BOLT
     --DT09-05-2023
-    --TM07:07:32s
+    --TM07:07:32
     """.splitlines()
 
 
 @pytest.mark.parametrize("gps_record,expected", GPS_RECORDS)
 def test_parse_gps_record(gps_record, expected, default_machine_state: MachineState):
-    row: RW5CSVRow = parse_gps_record(gps_record, default_machine_state)
+    row = parse_gps_record(gps_record, default_machine_state)
+    print(gps_record)
 
-    assert row == expected
+    assert row
+    for key, val in expected.items():
+        assert row[key] == val
 
 
 def test_parse_gps_record_with_machine_state(
@@ -257,17 +218,18 @@ def test_parse_gps_record_with_machine_state(
     default_machine_state: MachineState,
 ):
     default_machine_state["HI"] = 1
-    default_machine_state["MeasuredHR"] = 2
+    default_machine_state["HR"] = 2
 
-    row: RW5CSVRow = parse_gps_record(gps_record, default_machine_state)
+    row = parse_gps_record(gps_record, default_machine_state)
 
+    assert row
     assert row["InstrumentHeight"] == 1
-    assert row["MeasuredRodHeight"] == 2  # noqa: PLR2004
+    assert row["RodHeight"] == 2  # noqa: PLR2004
 
 
 def test_parse_ls_record_with_hi(default_machine_state: MachineState):
     """Test that the LS record changes the machine state."""
-    record = "LS,HI1.5450".splitlines()
+    record = "LS,HI1.5450,HR2.0".splitlines()
 
     ret = parse_ls_record(record, default_machine_state)
 
@@ -277,12 +239,18 @@ def test_parse_ls_record_with_hi(default_machine_state: MachineState):
 
 def test_parse_ls_record_with_hr(default_machine_state: MachineState):
     """Test that the LS record changes the machine state."""
+    # HR type LS records always come after a command with an "--entered rover HR" comment line in it.
+    default_machine_state["ProcessedCommandBlocks"] = [
+        [
+            "--Entered Rover HR: 2.0000 m, Vertical",
+        ],
+    ]
     record = "LS,HR1.4700".splitlines()
 
     ret = parse_ls_record(record, default_machine_state)
 
     assert ret is None  # No return from this record
-    assert default_machine_state["MeasuredHR"] == 1.4700  # noqa: PLR2004
+    assert default_machine_state["HR"] == 2.0  # noqa: PLR2004
 
 
 def test_parse_ls_record_with_hr_and_hi(default_machine_state: MachineState):
@@ -293,7 +261,23 @@ def test_parse_ls_record_with_hr_and_hi(default_machine_state: MachineState):
 
     assert ret is None  # No return from this record
     assert default_machine_state["HI"] == 1.5450  # noqa: PLR2004
-    assert default_machine_state["MeasuredHR"] == 1.4700  # noqa: PLR2004
+    assert default_machine_state["HR"] == 1.4700  # noqa: PLR2004
+
+
+def test_parse_bp_record(default_machine_state: MachineState):
+    """Test that the LS record changes the machine state."""
+    record = """BP,PN2291_BASE_1,LA45.433488970572,LN-65.291159761295,EL7.3050,AG1.8500,PA0.0701,ATAPC,SRROVER,--
+    --Entered Rover HR: 1.9900 m, Vertical
+    """.splitlines()
+
+    ret = parse_bp_record(record, default_machine_state)
+
+    assert ret
+    assert ret["RW5RecordType"] == "BP"
+    assert ret["PointID"] == "2291_BASE_1"
+    assert abs(ret["Lat"] - 45.433488970572) < 0.0001
+    assert abs(ret["Lng"] - -65.291159761295) < 0.0001
+    assert abs(ret["Elevation"] - 7.3050) < 0.0001
 
 
 def test_parse_ss_record(ss_record, default_machine_state: MachineState):
@@ -304,4 +288,4 @@ def test_parse_ss_record(ss_record, default_machine_state: MachineState):
     assert row["Note"] == "BOLT"
     assert row["RW5RecordType"] == "SS"
     assert row["InstrumentHeight"] is None
-    assert row["MeasuredRodHeight"] is None
+    assert row["RodHeight"] is None

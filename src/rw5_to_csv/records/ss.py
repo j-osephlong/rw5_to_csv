@@ -42,4 +42,5 @@ def parse_ss_record(
         InstrumentHeight=machine_state["HI"],
         InstrumentType=machine_state["InstrumentType"],
         DateTime=dt,
+        Overwritten=False,
     )

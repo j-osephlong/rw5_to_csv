@@ -23,13 +23,14 @@ def parse_ls_record(
         machine_state["InstrumentType"] = "TotalStation"
     elif "HI" not in ls_record_params and "HR" in ls_record_params:
         assert len(machine_state["ProcessedCommandBlocks"]) > 0, """GPS LS record without a previous command is invalid."""  # noqa: E501
-        prev_command = machine_state["ProcessedCommandBlocks"][-1]
-        rover_height_prefix = "--Entered Rover HR:"
-        for line in prev_command:
-            if line.startswith(rover_height_prefix):
-                machine_state["HR"] = float(
-                    line.removeprefix(rover_height_prefix).split()[0],
-                )
+        if len(machine_state["ProcessedCommandBlocks"]) > 0:
+            prev_command = machine_state["ProcessedCommandBlocks"][-1]
+            rover_height_prefix = "--Entered Rover HR:"
+            for line in prev_command:
+                if line.startswith(rover_height_prefix):
+                    machine_state["HR"] = float(
+                        line.removeprefix(rover_height_prefix).split()[0],
+                    )
         machine_state["HI"] = None
         machine_state["InstrumentType"] = "GPS"
 

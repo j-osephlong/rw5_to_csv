@@ -8,7 +8,7 @@ from rw5_to_csv.machine_state import MachineState
 from rw5_to_csv.records.common import get_date_time
 from rw5_to_csv.records.record import RW5CSVRow, get_standard_record_params_dict
 
-logger = getLogger(__file__)
+logger = getLogger(__name__)
 
 HRMS_LINE_START = "--HRMS Avg:"
 VRMS_LINE_START = "--VRMS Avg:"
@@ -279,4 +279,5 @@ def parse_gps_record(
         InstrumentHeight=machine_state["HI"],
         InstrumentType=machine_state["InstrumentType"],
         DateTime=dt,
+        Overwritten=False,
     )
