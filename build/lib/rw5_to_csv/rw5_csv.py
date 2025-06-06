@@ -15,7 +15,7 @@ from typing import TypedDict
 
 from rw5_to_csv.machine_state import MachineState
 from rw5_to_csv.records.record import (
-    RW5CSVRow,
+    RW5Row,
     get_standard_record_params_dict,
 )
 from rw5_to_csv.records.records_parsers import RECORD_CSV_PARSERS
@@ -129,7 +129,7 @@ def prelude(rw5_path: Path) -> RW5Prelude:
 def parse_command(
     command_block: list[str],
     machine_state: MachineState,
-) -> RW5CSVRow | None:
+) -> RW5Row | None:
     """Create a CSV row form an RW5 command block.
 
     Returns
@@ -212,7 +212,7 @@ def convert(rw5_path: Path, output_path: Path | None, tzinfo: datetime._TzInfo |
     with rw5_path.open("r", encoding="iso8859-1") as input_file:
         command_blocks = group_lines_into_command_blocks(input_file.readlines())
 
-    rows: list[RW5CSVRow] = []
+    rows: list[RW5Row] = []
     visited_point_ids = set()
 
     for command_block in command_blocks:
@@ -247,7 +247,7 @@ def convert(rw5_path: Path, output_path: Path | None, tzinfo: datetime._TzInfo |
         with output_path.open("w") as csv_file:
             writer = csv.DictWriter(
                 csv_file,
-                fieldnames=RW5CSVRow.__annotations__.keys(),
+                fieldnames=RW5Row.__annotations__.keys(),
                 delimiter=",",
                 lineterminator="\n",
             )

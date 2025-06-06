@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pytest
 
-from rw5_to_csv.records.record import RW5CSVRow
 from rw5_to_csv.rw5_csv import convert, group_lines_into_command_blocks
 
 test_rw5_files__convert: list[tuple[Path, int, int, int]] = [
@@ -29,11 +28,11 @@ def test_convert(
     bp_record_count: int,
 ) -> None:
     """Test that each file produces the expected number of rows per record type."""
-    csv_rows: list[RW5CSVRow] = convert(rw5_file_path, None)
+    machine = convert(rw5_file_path, None)
 
-    csv_gps_records = [row for row in csv_rows if row["RW5RecordType"] == "GPS"]
-    csv_ss_records = [row for row in csv_rows if row["RW5RecordType"] == "SS"]
-    csv_bp_records = [row for row in csv_rows if row["RW5RecordType"] == "BP"]
+    csv_gps_records = [row for row in machine.Records.values() if row.RW5RecordType == "GPS"]
+    csv_ss_records = [row for row in machine.Records.values() if row.RW5RecordType == "SS"]
+    csv_bp_records = [row for row in machine.Records.values() if row.RW5RecordType == "BP"]
 
     assert len(csv_gps_records) == gps_record_count
     assert len(csv_ss_records) == ss_record_count
@@ -75,11 +74,11 @@ def test_overwrite_duplicate_points():
     known_num_ss_records = 73
     known_num_duplicated_ss_ids = 1
 
-    csv_rows: list[RW5CSVRow] = convert(example_path, None)
+    machine = convert(example_path, None)
 
-    csv_ss_records = [row for row in csv_rows if row["RW5RecordType"] == "SS"]
+    csv_ss_records = [row for row in machine.Records.values() if row.RW5RecordType == "SS"]
     num_ss_rows = len(csv_ss_records)
-    num_overwritten_ss_records = len([r for r in csv_ss_records if r["Overwritten"]])
+    num_overwritten_ss_records = len([r for r in csv_ss_records if r.Overwritten])
 
     assert num_ss_rows == known_num_ss_records - known_num_duplicated_ss_ids
     assert num_overwritten_ss_records == known_num_duplicated_ss_ids

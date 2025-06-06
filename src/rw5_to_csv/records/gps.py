@@ -5,8 +5,8 @@ from decimal import Decimal
 from logging import getLogger
 
 from rw5_to_csv.machine_state import MachineState
-from rw5_to_csv.records.common import get_date_time
-from rw5_to_csv.records.record import RW5CSVRow, get_standard_record_params_dict
+from rw5_to_csv.records.common import get_date_time, get_standard_record_params_dict
+from rw5_to_csv.records.record import RW5Row
 
 logger = getLogger(__name__)
 
@@ -232,7 +232,7 @@ def _get_gdop(command_block: list[str]) -> float | None:
 def parse_gps_record(
     command_block: list[str],
     machine_state: MachineState,
-) -> RW5CSVRow | None:
+) -> list[RW5Row]:
     logger.debug(command_block)
 
     first_line_params = get_standard_record_params_dict(command_block[0].strip())
@@ -250,18 +250,18 @@ def parse_gps_record(
         gdop = _get_gdop(command_block)
         num_sats = _get_number_of_satellites(command_block)
         age = _get_age_of_corrections(command_block)
-        dt = get_date_time(command_block, machine_state["tzinfo"] or datetime.UTC)
+        dt = get_date_time(command_block, machine_state.tzinfo or datetime.UTC)
     except ValueError:
         logger.exception("Skipping record.")
-        return None
+        return []
 
-    return RW5CSVRow(
+    return [RW5Row(
         PointID=first_line_params["PN"],
         Lat=float(first_line_params["LA"]),
         Lng=float(first_line_params["LN"]),
         Elevation=float(first_line_params["EL"]),
-        LocalX=Decimal(second_line_params["N "]),
-        LocalY=Decimal(second_line_params["E "]),
+        LocalX=Decimal(second_line_params["E "]),
+        LocalY=Decimal(second_line_params["N "]),
         LocalZ=Decimal(second_line_params["EL"]),
         HRMS=hrms,
         VRMS=vrms,
@@ -275,9 +275,5 @@ def parse_gps_record(
         Age=age,
         Note=first_line_params["--"],
         RW5RecordType="GPS",
-        RodHeight=machine_state["HR"],
-        InstrumentHeight=machine_state["HI"],
-        InstrumentType=machine_state["InstrumentType"],
         DateTime=dt,
-        Overwritten=False,
-    )
+    )]
