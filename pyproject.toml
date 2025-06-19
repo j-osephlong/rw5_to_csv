@@ -45,3 +45,6 @@ ignored_tag_formats = [
 version_files = [
     "pyproject.toml:version",
 ]
+post_bump_hooks = [
+  "build.ps1"
+]
