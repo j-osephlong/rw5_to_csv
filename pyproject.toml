@@ -17,6 +17,9 @@ authors = [
 readme = "README.md"
 license = {text = "MIT License"}
 keywords = ["rw5", "totalstation", "processing"]
+dependencies = [
+  "matplotlib",
+]
 
 [project.urls]
 Source = "https://github.com/j-osephlong/rw5_to_csv"

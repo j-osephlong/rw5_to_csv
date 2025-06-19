@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from rw5_to_csv.rw5_csv import convert, group_lines_into_command_blocks
+from rw5_to_csv.convert import convert, group_lines_into_command_blocks
 
 test_rw5_files__convert: list[dict] = [
     {
