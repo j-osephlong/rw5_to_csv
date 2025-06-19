@@ -7,7 +7,9 @@ src/rw5_to_csv/machine_state.py
 src/rw5_to_csv/plot.py
 src/rw5_to_csv/prelude.py
 src/rw5_to_csv/py.typed
+src/rw5_to_csv/total_station.py
 src/rw5_to_csv.egg-info/PKG-INFO
 src/rw5_to_csv.egg-info/SOURCES.txt
 src/rw5_to_csv.egg-info/dependency_links.txt
+src/rw5_to_csv.egg-info/requires.txt
 src/rw5_to_csv.egg-info/top_level.txt
