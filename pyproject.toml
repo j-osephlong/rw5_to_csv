@@ -46,5 +46,5 @@ version_files = [
     "pyproject.toml:version",
 ]
 post_bump_hooks = [
-  "build.ps1"
+  "./build.ps1"
 ]
