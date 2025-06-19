@@ -1,5 +1,6 @@
 """Functions regarding the plotting of totalstation data on matplotlib."""
 
+import io
 import math
 
 import matplotlib.pyplot as plt  # v 3.3.2
@@ -49,7 +50,11 @@ def scale_to_new_dimensions(p: Point2DType, old_extent: ExtentType, new_extent: 
     return (scaled_x, scaled_y)
 
 
-def plot_ts_data(machine: MachineState):
+def plot_total_station_data(machine: MachineState) -> io.BytesIO:
+    """Plot ts data with matplotlib.
+
+    Returns BytesIO object containing png data.
+    """  # noqa: DOC201
     # setup figure
     extent = get_extent(list(machine.Records.values()))
     new_extent = (0, 0, 4, 4)
@@ -102,4 +107,7 @@ def plot_ts_data(machine: MachineState):
         # add label for OC
         ax.text(scaled_p[0] + 0.15, scaled_p[1], oc_record.PointID, ha="left", va="center", fontsize="xx-small", color="g")
 
-    fig.savefig("fig.png", bbox_inches="tight")
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format="png", bbox_inches="tight")
+    buffer.seek(0)
+    return buffer

@@ -44,15 +44,11 @@ def parse_bk_record(
     assert bs_point.LocalY
     assert bs_point.LocalZ
 
-    print(f"op {op_point.LocalX:.2f} {op_point.LocalY:.2f} {op_point.LocalZ:.2f}")
-    print(f"bs {bs_point.LocalX:.2f} {bs_point.LocalY:.2f} {bs_point.LocalZ:.2f}")
-
     backsight_distance = math.sqrt(
         ((op_point.LocalX - bs_point.LocalX) ** 2)
         + ((op_point.LocalY - bs_point.LocalY) ** 2)
         + ((op_point.LocalZ - bs_point.LocalZ) ** 2),
     )
-    print(f"{backsight_distance=}")
 
     reflectorless = False
     if len(command_block) > 1:
