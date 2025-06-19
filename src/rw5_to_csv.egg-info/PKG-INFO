@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: rw5_to_csv
-Version: 0.3.0
+Version: 0.6.2
 Summary: Parse RW5 files into CSV files of GPS and SS records.
 Home-page: https://github.com/j-osephlong/rw5_to_csv
 Author: Joseph Long
