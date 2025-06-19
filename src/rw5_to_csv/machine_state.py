@@ -17,9 +17,10 @@ class BacksightRow:
     """Result of a BK record, drawing a backsight line."""
 
     Reflectorless: bool
-    FromPointID: str
-    ToPointID: str
+    BacksightPointID: str
+    OccupiedPointID: str
     BacksightAngleDD: float
+    BacksightDistance: float
 
 
 @dataclass

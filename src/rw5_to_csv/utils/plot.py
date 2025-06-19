@@ -64,8 +64,8 @@ def plot_ts_data(machine: MachineState):
         assert oc_record.LocalX
         assert oc_record.LocalY
         # find all backsights
-        backsights = [b for b in machine.Backsights if b.FromPointID == oc_record.PointID]
-        backsight_points = [machine.Records[b.ToPointID] for b in backsights if b.ToPointID in machine.Records]
+        backsights = [b for b in machine.Backsights if b.BacksightPointID == oc_record.PointID]
+        backsight_points = [machine.Records[b.OccupiedPointID] for b in backsights if b.OccupiedPointID in machine.Records]
         # find all side shots
         sideshot_ids = [ss for ss, oc in machine.SideshotIDOccupiedPointID.items() if oc == oc_record.PointID]
         sideshots = [machine.Records[id] for id in sideshot_ids if id in machine.Records]

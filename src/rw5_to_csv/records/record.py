@@ -30,6 +30,9 @@ class RW5Row:
     GDOP: float | None = None
     DateTime: datetime.datetime | None = None
     Overwritten: bool = False
+    OffsetDirection: str | None = None
+    OffsetDistance: float | None = None
+    ForesightDistance: float | None = None
     # Machine state
     RodHeight: float | None = None
     """Set by machine state."""
@@ -39,5 +42,3 @@ class RW5Row:
     """Set by machine state."""
     PrismApplied: str | None = None
     """Set by machine state."""
-    OffsetDirection: str | None = None
-    OffsetDistance: float | None = None

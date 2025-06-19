@@ -1,5 +1,7 @@
+import pprint
 from collections.abc import Sequence
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 
@@ -108,8 +110,6 @@ GPS_RECORDS: list[tuple[Sequence[str], RW5Row]] = [
         --Pole Incline Min: 16.2485 Max: 17.0817 Average: 16.7516
         --Incline adjustments disabled
         --HRMS:0.014, VRMS:0.016, STATUS:FIXED+, SATS:23, AGE:1.0, PDOP:0.900, HDOP:0.541, VDOP:0.719, TDOP:0.469, GDOP:1.015
-        --DT09-30-2024
-        --TM10:15:48
         """.splitlines(),
         RW5Row(
             PointID="5132",
@@ -153,8 +153,6 @@ GPS_RECORDS: list[tuple[Sequence[str], RW5Row]] = [
         --Number of Satellites Avg: 29 Min: 29 Max: 29
         --Pole Incline Min: 0.3659 Max: 0.4026 Average: 0.3830
         --Incline adjustments disabled
-        --DT09-30-2024
-        --TM08:32:05
         """.splitlines(),
         RW5Row(
             PointID="5100",
@@ -178,18 +176,11 @@ GPS_RECORDS: list[tuple[Sequence[str], RW5Row]] = [
 ]
 
 
-@pytest.fixture
-def ss_record():
-    return """SS,OPTEMP1,FP7001,AR210.2811,ZE63.0014,SD23.750400,--BOLT
-    --DT09-05-2023
-    --TM07:07:32
-    """.splitlines()
-
-
 @pytest.mark.parametrize("gps_record,expected", GPS_RECORDS)
 def test_parse_gps_record(gps_record, expected, default_machine_state: MachineState):
-    row = parse_gps_record(gps_record, default_machine_state)
-    print(gps_record)
+    row = parse_gps_record(gps_record, default_machine_state)[0]
+    pprint.pprint(row)
+    pprint.pprint(expected)
 
     assert row == expected
 
@@ -249,43 +240,57 @@ def test_parse_bp_record(default_machine_state: MachineState):
 
 
 def test_parse_ts_data(default_machine_state: MachineState):
+    # data from 19194AT240822
+
+    # setup crdb path
+    crdb_path = Path("./src/tests/data/ss.test.crdb")
+    default_machine_state.crdb_path = crdb_path
+
+    # starting from line 37
     # parse OC
-    ls_record = ["LS,HI1.6260,HR0.0000"]
-    oc_record = ["OC,OP6006,N 7363380.72737,E 2534856.89371,EL24.738,--CP/MAG"]
-    bk_record = ["BK,OP6006,BP6002,BS340.0906,BC261.3020"]
-    ss_record = """SS,OP6006,FP5313,AR334.0406,ZE86.1931,SD57.888877,--BLDS
-    --DT07-21-2021
-    --TM13:26:13""".splitlines()
+    ls_record = ["LS,HI1.0000,HR0.0000"]
+    oc_record = ["OC,OP1,N 123.00000,E 123.00000,EL123.000,--"]
+    bk_record = ["BK,OP1,BPG1,BS18.5823,BC0.0000"]
+    ss_record = """SS,OP1,FP2,AR12.4721,ZE87.0237,SD3.107000,--
+    --DT08-22-2024
+    --TM16:10:29""".splitlines()
 
     ls_row = parse_ls_record(ls_record, default_machine_state)
     assert ls_row == []
-    assert default_machine_state.HI and default_machine_state.HI - 1.6260 < 0.0001
+    assert default_machine_state.HI and default_machine_state.HI - 1.0000 < 0.0001
     assert default_machine_state.HR == 0
 
     oc_row = parse_oc_record(oc_record, default_machine_state)
     assert oc_row
     assert oc_row[0].RW5RecordType == "OC"
-    assert oc_row[0].PointID == "6006"
-    assert oc_row[0].LocalX == Decimal("2534856.89371")
-    assert oc_row[0].LocalY == Decimal("7363380.72737")
-    assert oc_row[0].LocalZ == Decimal("24.738")
-    assert oc_row[0].Note == "CP/MAG"
+    assert oc_row[0].PointID == "1"
+    assert oc_row[0].LocalX == Decimal("123.00000")
+    assert oc_row[0].LocalY == Decimal("123.00000")
+    assert oc_row[0].LocalZ == Decimal("123.00000")
+    assert oc_row[0].Note == ""
 
     # add row to machine state to make ss record work
-    default_machine_state.Records["6006"] = oc_row[0]
+    default_machine_state.Records["1"] = oc_row[0]
 
-    assert default_machine_state.OccupiedPointID == "6006"
+    # machine state is updated to new OP
+    assert default_machine_state.OccupiedPointID == "1"
 
     bk_row = parse_bk_record(bk_record, default_machine_state)
     assert len(bk_row) == 0  # bk doesn't add a point record
     assert len(default_machine_state.Backsights) > 0
-    assert default_machine_state.Backsights[-1].BacksightAngleDD == dms_to_dd("340.0906")
-    assert default_machine_state.Backsights[-1].FromPointID == "6006"
-    assert default_machine_state.Backsights[-1].ToPointID == "6002"
+    assert default_machine_state.Backsights[-1].BacksightAngleDD == dms_to_dd("18.5823")
+    assert default_machine_state.Backsights[-1].BacksightPointID == "G1"
+    assert default_machine_state.Backsights[-1].OccupiedPointID == "1"
+    # back sight distance calculated correctly
+    assert default_machine_state.Backsights[-1].BacksightDistance - 7789948.654778705 < 0.001
 
-    ss_row = parse_ss_record(ss_record, default_machine_state)
+    ss_row = parse_ss_record(ss_record, default_machine_state)  # type: ignore []
     assert ss_row
-    assert ss_row[0].PointID == "5313"
+    # coords grabbed from crdb
+    assert ss_row[0].LocalX - Decimal("124.633332") < 0.001
+    assert ss_row[0].LocalY - Decimal("125.638181") < 0.001
+    assert ss_row[0].LocalZ - Decimal("124.160246") < 0.001
+    assert ss_row[0].PointID == "2"
     assert ss_row[0].RW5RecordType == "SS"
-    assert ss_row[0].Note == "BLDS"
-    assert default_machine_state.SideshotIDOccupiedPointID["5313"] == "6006"
+    assert ss_row[0].Note == ""
+    assert default_machine_state.SideshotIDOccupiedPointID["2"] == "1"

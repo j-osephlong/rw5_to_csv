@@ -13,6 +13,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output")
     parser.add_argument("--crdb", required=False)
     parser.add_argument("--prelude", action="store_true")
+    parser.add_argument("--backsights", action="store_true")
     args = parser.parse_args()
     input_path = Path(args.input)
     input_crdb_path = None
@@ -24,5 +25,5 @@ if __name__ == "__main__":
         logger.info(pprint.pformat(p))
     else:
         machine = convert(input_path, output_path, crdb_path=input_crdb_path)
-        if output_path is None:
-            logger.info(pprint.pformat(machine))
+        if args.backsights:
+            logger.info(pprint.pformat(machine.Backsights))

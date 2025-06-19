@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from logging import getLogger
 
 from rw5_to_csv.machine_state import BacksightRow, MachineState
@@ -24,11 +25,34 @@ def parse_bk_record(
         --P.C. mm Applied: 0.0000 (Reflectorless:foresight)
         `
     """  # noqa: DOC201
+    # CRDB required for total station data
+    if not machine_state.crdb_path:
+        return []
+
     first_line_params = get_standard_record_params_dict(command_block[0].strip())
 
-    from_point_id = first_line_params["OP"]
-    to_point_id = first_line_params["BP"]
+    oc_point_id = first_line_params["OP"]
+    bs_point_id = first_line_params["BP"]
     backsigt_angle = dms_to_dd(first_line_params["BS"])
+
+    op_point = get_crdb_point(oc_point_id, machine_state.crdb_path)
+    bs_point = get_crdb_point(bs_point_id, machine_state.crdb_path)
+    assert op_point.LocalX
+    assert op_point.LocalY
+    assert op_point.LocalZ
+    assert bs_point.LocalX
+    assert bs_point.LocalY
+    assert bs_point.LocalZ
+
+    print(f"op {op_point.LocalX:.2f} {op_point.LocalY:.2f} {op_point.LocalZ:.2f}")
+    print(f"bs {bs_point.LocalX:.2f} {bs_point.LocalY:.2f} {bs_point.LocalZ:.2f}")
+
+    backsight_distance = math.sqrt(
+        ((op_point.LocalX - bs_point.LocalX) ** 2)
+        + ((op_point.LocalY - bs_point.LocalY) ** 2)
+        + ((op_point.LocalZ - bs_point.LocalZ) ** 2),
+    )
+    print(f"{backsight_distance=}")
 
     reflectorless = False
     if len(command_block) > 1:
@@ -36,16 +60,10 @@ def parse_bk_record(
 
     machine_state.Backsights.append(BacksightRow(
         Reflectorless=reflectorless,
-        FromPointID=from_point_id,
-        ToPointID=to_point_id,
+        BacksightPointID=bs_point_id,
+        OccupiedPointID=oc_point_id,
         BacksightAngleDD=backsigt_angle,
+        BacksightDistance=backsight_distance,
     ))
 
-    # to point may not be in file, so see if we can get it from crdb
-    new_records = []
-    if to_point_id not in machine_state.Records and machine_state.crdb_path:
-        crdb_record = get_crdb_point(to_point_id, crdb_path=machine_state.crdb_path)
-        if crdb_record is not None:
-            new_records = [crdb_record]
-
-    return new_records
+    return []
