@@ -74,12 +74,13 @@ def plot_total_station_data(machine: MachineState) -> io.BytesIO:
         assert oc_record.LocalY
         # find all backsights
         backsights = [b for b in machine.Backsights if b.OccupiedPointID == oc_record.PointID]
-        backsight_points = [get_crdb_point(b.BacksightPointID, machine.crdb_path) for b in backsights if b.BacksightPointID in machine.Records]
+        backsight_points = [get_crdb_point(b.BacksightPointID, machine.crdb_path) for b in backsights]
         # find all side shots
         sideshot_ids = [ss for ss, oc in machine.SideshotIDOccupiedPointID.items() if oc == oc_record.PointID]
         sideshots = [machine.Records[id] for id in sideshot_ids if id in machine.Records]
 
         #  add backsights
+        print(f"{backsight_points=}")
         for b in backsight_points:
             if not b.LocalX or not b.LocalY:
                 continue
@@ -91,7 +92,7 @@ def plot_total_station_data(machine: MachineState) -> io.BytesIO:
             scaled_p = scale_to_new_dimensions(p, extent, new_extent)
             ax.plot(scaled_p[0], scaled_p[1], "r^", alpha=0.7, markersize=22)
             # annotate marker with point id
-            ax.text(scaled_p[0] + 0.02, scaled_p[1] - 0.004, b.PointID, ha="left", va="center", color="r", fontsize="xx-large")
+            ax.text(scaled_p[0] + 0.25, scaled_p[1] - 0.2, b.PointID, ha="left", va="center", color="r", fontsize="xx-large")
 
         # add sideshot lines
         for ss in sideshots:
@@ -106,7 +107,7 @@ def plot_total_station_data(machine: MachineState) -> io.BytesIO:
         scaled_p = scale_to_new_dimensions(p, extent, new_extent)
         ax.plot(scaled_p[0], scaled_p[1], "g^", alpha=0.7, markersize=22)
         # add label for OC
-        ax.annotate(oc_record.PointID, (scaled_p[0] + 0.02, scaled_p[1]), ha="left", va="center", fontsize="xx-large", color="g")
+        ax.annotate(oc_record.PointID, (scaled_p[0] + 0.25, scaled_p[1]), ha="left", va="center", fontsize="xx-large", color="g")
 
         # add sideshot points (on top of everything because they're smaller)
         for ss in sideshots:
