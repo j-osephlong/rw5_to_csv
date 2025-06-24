@@ -3,6 +3,7 @@ from typing import Self
 
 from rw5_to_csv.machine_state import BacksightRow, MachineState
 from rw5_to_csv.records.record import RW5Row
+from rw5_to_csv.utils.crdb import get_crdb_point
 
 
 @dataclass
@@ -17,6 +18,9 @@ class TSStation:
     @classmethod
     def build(cls, machine_state: MachineState, occupied_point_id: str) -> Self:
         """Build an object given a machine and oc point id."""  # noqa: DOC201, DOC501
+        if not machine_state.crdb_path:
+            msg = "CRDB file required for totalstation data."
+            raise ValueError(msg)
         occupied_point = machine_state.Records[occupied_point_id]
 
         side_shots = [
@@ -29,7 +33,7 @@ class TSStation:
         if backsight is None:
             msg = f"Missing backsight for occupied point {occupied_point_id}."
             raise ValueError(msg)
-        backsight_point = machine_state.Records[backsight.BacksightPointID]
+        backsight_point = get_crdb_point(backsight.BacksightPointID, machine_state.crdb_path)
 
         return cls(
             OccupiedPoint=occupied_point,
