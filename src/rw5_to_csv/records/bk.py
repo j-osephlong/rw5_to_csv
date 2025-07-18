@@ -37,12 +37,13 @@ def parse_bk_record(
 
     op_point = get_crdb_point(oc_point_id, machine_state.crdb_path)
     bs_point = get_crdb_point(bs_point_id, machine_state.crdb_path)
-    assert op_point.LocalX
-    assert op_point.LocalY
-    assert op_point.LocalZ
-    assert bs_point.LocalX
-    assert bs_point.LocalY
-    assert bs_point.LocalZ
+    logger.debug(op_point)
+    assert op_point.LocalX is not None
+    assert op_point.LocalY is not None
+    assert op_point.LocalZ is not None
+    assert bs_point.LocalX is not None
+    assert bs_point.LocalY is not None
+    assert bs_point.LocalZ is not None
 
     backsight_distance = math.sqrt(
         ((op_point.LocalX - bs_point.LocalX) ** 2)

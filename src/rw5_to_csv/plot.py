@@ -70,8 +70,8 @@ def plot_total_station_data(machine: MachineState) -> io.BytesIO:
     oc_records = [r for r in machine.Records.values() if r.RW5RecordType == "OC"]
 
     for oc_record in oc_records:
-        assert oc_record.LocalX
-        assert oc_record.LocalY
+        assert oc_record.LocalX is not None
+        assert oc_record.LocalY is not None
         # find all backsights
         backsights = [b for b in machine.Backsights if b.OccupiedPointID == oc_record.PointID]
         backsight_points = [get_crdb_point(b.BacksightPointID, machine.crdb_path) for b in backsights]
